@@ -1,7 +1,7 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import { nanoid } from "nanoid";
 import React, { useId } from "react";
-
+import s from "./ContactForm.module.css";
 import * as Yup from "yup";
 
 const initialValues = {
@@ -9,14 +9,16 @@ const initialValues = {
   number: "",
 };
 
-const FeedbackSchema = Yup.object().shape({
+const re = /^\+\d{10,15}$/;
+
+const FormSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Too Short!")
     .max(50, "Too Long!")
-    .required("Required"),
+    .required("Required field"),
   number: Yup.string()
-    .matches(/^\+?\d{5,13}$/, "Number must be 5-13 digits")
-    .required("Required"),
+    .matches(re, "The number must be between 10 and 15 characters long")
+    .required("Required field"),
 });
 
 const ContactForm = ({ addContact }) => {
@@ -35,21 +37,43 @@ const ContactForm = ({ addContact }) => {
 
   return (
     <Formik
-      validationSchema={FeedbackSchema}
+      validationSchema={FormSchema}
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      validateOnMount={true}
     >
-      {({ isValid, dirty }) => (
-        <Form>
-          <label htmlFor={nameId}>Name</label>
-          <Field type="text" name="name" id={nameId} />
-          <ErrorMessage name="name" component="span" />
+      {({ isValid, dirty, touched, errors }) => (
+        <Form className={s.form}>
+          <div className={s.fieldWrapper}>
+            <label className={s.lable} htmlFor={nameId}>
+              Name
+            </label>
+            <Field className={s.input} type="text" name="name" id={nameId} />
+            {touched.name && errors.name && (
+              <span className={s.error}>{errors.name}</span>
+            )}
+          </div>
+          <div className={s.fieldWrapper}>
+            <label className={s.lable} htmlFor={numberId}>
+              Number
+            </label>
+            <Field
+              className={s.input}
+              type="text"
+              name="number"
+              id={numberId}
+              placeholder="+380"
+            />
+            {touched.number && errors.number && (
+              <span className={s.error}>{errors.number}</span>
+            )}
+          </div>
 
-          <label htmlFor={numberId}>Number</label>
-          <Field type="text" name="number" id={numberId} placeholder="+380" />
-          <ErrorMessage name="number" component="span" />
-
-          <button type="submit" disabled={!isValid || !dirty}>
+          <button
+            className={s.button}
+            type="submit"
+            disabled={!isValid || !dirty}
+          >
             Add contact
           </button>
         </Form>

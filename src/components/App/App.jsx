@@ -3,6 +3,7 @@ import ContactForm from "../ContactForm/ContactForm";
 import SearchBox from "../SearchBox/SearchBox";
 import ContactList from "../ContactList/ContactList";
 import { getLocal, setLocal } from "../LocalStorage/LocalStorage";
+import s from "./App.module.css";
 
 const App = () => {
   const [contacts, setContacts] = useState(() => {
@@ -27,7 +28,7 @@ const App = () => {
     });
   };
 
-  const visibleContacts = contacts.filter((contact) => {
+  const addedContacts = contacts.filter((contact) => {
     return (
       contact.name.toLowerCase().includes(filter.toLowerCase()) ||
       contact.number.includes(filter)
@@ -35,14 +36,14 @@ const App = () => {
   });
 
   return (
-    <ul >
-      <li >
-        <h1 >Phonebook</h1>
+    <ul className={s.ul}>
+      <li>
+        <h1>Phonebook</h1>
         <ContactForm addContact={addContact} />
         <SearchBox value={filter} onFilter={setFilter} />
       </li>
-      <li >
-        <ContactList userContacts={visibleContacts} deleteUser={deleteUser} />
+      <li>
+        <ContactList userContacts={addedContacts} deleteUser={deleteUser} />
       </li>
     </ul>
   );
